@@ -191,6 +191,38 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <div id="vista-rapida-modal" class="modal" hidden>
+  <div class="modal__contenido">
+    <button class="modal__cerrar" type="button" id="btn-cerrar-modal" aria-label="Cerrar ventana">&times;</button>
+    
+    <div class="modal__layout">
+      <!-- Izquierda: Imagen del producto -->
+      <div class="modal__imagen-zona">
+        <img id="modal-img" src="" alt="Producto">
+      </div>
+      
+      <!-- Derecha: Detalles del producto -->
+      <div class="modal__detalles-zona">
+        <h2 id="modal-titulo" class="modal__titulo">Nombre del Producto</h2>
+        <p id="modal-precio" class="modal__precio">S/. 0.00</p>
+        <p id="modal-descripcion" class="modal__descripcion">Descripción detallada de la prenda...</p>
+        
+        <!-- Selección de Tallas -->
+        <div class="modal__tallas">
+          <span class="modal__tallas-etiqueta">Talla:</span>
+          <div class="modal__tallas-opciones">
+            <button type="button" class="modal__talla-btn">S</button>
+            <button type="button" class="modal__talla-btn">M</button>
+            <button type="button" class="modal__talla-btn">L</button>
+          </div>
+        </div>
+        
+        <!-- Botón conectar con tu lógica del carrito -->
+        <button type="button" id="modal-btn-agregar" class="modal__btn-comprar">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+</div>
   <script src="js/cart.js"></script>
 </body>
 </html>

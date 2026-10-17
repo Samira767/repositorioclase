@@ -78,3 +78,54 @@ function actualizarBurbujaHeader() {
         }
     }
 }
+// =========================================================================
+// INTERACCIONES DEL MODAL VISTA RÁPIDA
+// =========================================================================
+
+// Función para abrir el modal cargando la información del producto seleccionado
+function abrirVistaRapida(productoData) {
+    const modal = document.getElementById('vista-rapida-modal');
+    
+    if (modal) {
+        // Inyectar los datos dinámicamente en los elementos del modal
+        document.getElementById('modal-img').src = productoData.imagen;
+        document.getElementById('modal-titulo').innerText = productoData.nombre;
+        document.getElementById('modal-precio').innerText = `S/. ${productoData.precio.toFixed(2)}`;
+        document.getElementById('modal-descripcion').innerText = productoData.descripcion || "Prenda de la colección de temporada AERIS. Diseño minimalista confeccionado con materiales de alta calidad.";
+        
+        // Configurar el botón de comprar interno del modal para que funcione con tu carrito
+        const btnAgregarInterno = document.getElementById('modal-btn-agregar');
+        btnAgregarInterno.onclick = () => {
+            agregarProducto(productoData.id, productoData.nombre, productoData.precio);
+            cerrarVistaRapida();
+        };
+
+        // Mostrar el modal quitando el atributo hidden
+        modal.removeAttribute('hidden');
+    }
+}
+
+// Función para cerrar el modal
+function cerrarVistaRapida() {
+    const modal = document.getElementById('vista-rapida-modal');
+    if (modal) {
+        modal.setAttribute('hidden', '');
+    }
+}
+
+// Configurar el evento de cierre al hacer clic en la (X) o fuera del contenedor
+document.addEventListener('DOMContentLoaded', () => {
+    const btnCerrar = document.getElementById('btn-cerrar-modal');
+    const modal = document.getElementById('vista-rapida-modal');
+
+    if (btnCerrar) {
+        btnCerrar.addEventListener('click', cerrarVistaRapida);
+    }
+
+    // Cerrar si hacen clic en el fondo oscuro
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) cerrarVistaRapida();
+        });
+    }
+});
