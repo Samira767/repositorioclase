@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/hero.css">
   <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/productos.css">
   <!-- Aquí se agregarán: css/catalogo.css y css/carrito.css -->
 </head>
 <body>
@@ -102,9 +103,116 @@
          (Compañero/a 2) — usar <section class="catalog" id="catalogo">
          y la clase .container para mantener el ancho del sitio.
          ====================================================== -->
+         
     <section class="section" id="catalogo">
       <div class="container">
-        <!-- Catálogo aquí -->
+        
+<!-- ENCABEZADO DEL CATALOGO -->
+<div class="catalog__header" id="novedades">
+  <p class="catalog__eyebrow">AERIS · NUEVA TEMPORADA</p>
+  <h2 class="catalog__title">Nuestras novedades</h2>
+  <p class="catalog__description">
+    Prendas esenciales para expresar tu estilo.
+  </p>
+</div>
+
+<!-- FILTROS POR GENERO -->
+<nav class="catalog__filters" aria-label="Filtrar por genero">
+  <button class="catalog__filter is-active"
+          type="button"
+          data-filter-type="genero"
+          data-filter-value="Todos"
+          aria-pressed="true">
+    Todos
+  </button>
+
+  <button class="catalog__filter"
+          type="button"
+          data-filter-type="genero"
+          data-filter-value="Mujer"
+          aria-pressed="false">
+    Mujer
+  </button>
+
+  <button class="catalog__filter"
+          type="button"
+          data-filter-type="genero"
+          data-filter-value="Hombre"
+          aria-pressed="false">
+    Hombre
+  </button>
+</nav>
+
+<!-- FILTROS POR CATEGORIA -->
+<nav class="catalog__filters" aria-label="Filtrar por categoria">
+  <button class="catalog__filter is-active"
+          type="button"
+          data-filter-type="categoria"
+          data-filter-value="Todas"
+          aria-pressed="true">
+    Todas las prendas
+  </button>
+
+  <button class="catalog__filter"
+          type="button"
+          data-filter-type="categoria"
+          data-filter-value="Vestidos"
+          aria-pressed="false">
+    Vestidos
+  </button>
+
+  <button class="catalog__filter"
+          type="button"
+          data-filter-type="categoria"
+          data-filter-value="Camisas"
+          aria-pressed="false">
+    Camisas
+  </button>
+
+  <button class="catalog__filter"
+          type="button"
+          data-filter-type="categoria"
+          data-filter-value="Jeans"
+          aria-pressed="false">
+    Jeans
+  </button>
+
+  <button class="catalog__filter"
+          type="button"
+          data-filter-type="categoria"
+          data-filter-value="Sacos"
+          aria-pressed="false">
+    Sacos
+  </button>
+</nav>
+
+<!-- CONTADOR DE PRODUCTOS -->
+<p class="catalog__count"
+   id="products-count"
+   aria-live="polite">
+  8 productos
+</p>
+
+<!-- AQUI JAVASCRIPT INSERTARA LAS TARJETAS -->
+<div class="products-grid" id="products-grid"></div>
+
+<!-- BANNERS PROMOCIONALES -->
+<div class="catalog__promotions" id="ofertas">
+
+  <article class="catalog__promotion">
+    <p class="catalog__promotion-label">Nueva colección</p>
+    <h3>Colección de Primavera</h3>
+    <p>Descubre prendas que combinan comodidad y elegancia.</p>
+  </article>
+
+  <article class="catalog__promotion catalog__promotion--dark">
+    <p class="catalog__promotion-label">Promoción especial</p>
+    <h3>Hasta 30% de descuento</h3>
+    <p>Encuentra tu próximo favorito de AERIS.</p>
+  </article>
+
+</div>
+
       </div>
     </section>
 
@@ -191,6 +299,7 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="js/productos.js" defer></script>
   <!-- Aquí se agregarán: js/catalogo.js y js/carrito.js -->
 </body>
 </html>
