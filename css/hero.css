@@ -1,0 +1,100 @@
+/* ==========================================================================
+   HERO.CSS — Banner principal
+   Bloque BEM: .hero
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: calc(100vh - var(--header-height));
+  min-height: calc(100svh - var(--header-height));
+  color: var(--color-white);
+  /* Color de respaldo si la imagen no carga */
+  background-color: var(--color-gray-800);
+  /* Reemplazar por una imagen local, p. ej. url("../img/hero.jpg") */
+  background-image: url("https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=2000&q=80");
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+/* Degradado para asegurar contraste del texto */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.25) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+
+.hero__content {
+  position: relative;          /* Por encima del overlay */
+  padding-block: var(--space-16);
+  animation: hero-in 0.9s ease both;
+}
+
+.hero__eyebrow {
+  margin-bottom: var(--space-4);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.hero__title {
+  max-width: 12ch;
+  margin-bottom: var(--space-6);
+  font-family: var(--font-serif);
+  font-size: var(--fs-display);
+  font-weight: var(--fw-regular);
+  line-height: 1;
+}
+
+.hero__title em {
+  font-style: italic;
+}
+
+.hero__subtitle {
+  max-width: 42ch;
+  margin-bottom: var(--space-8);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-light);
+  opacity: 0.9;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .hero {
+    min-height: 80vh;
+    min-height: 80svh;
+  }
+
+  .hero__subtitle {
+    font-size: var(--fs-base);
+  }
+
+  .hero__actions .btn {
+    flex: 1 1 100%;
+  }
+}

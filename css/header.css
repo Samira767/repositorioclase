@@ -1,0 +1,251 @@
+/* ==========================================================================
+   HEADER.CSS — Encabezado, navegación y menú móvil
+   Bloques BEM: .header, .nav, .nav-overlay
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. HEADER (barra fija)
+   -------------------------------------------------------------------------- */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+  transition: box-shadow var(--transition);
+}
+
+/* Se añade con JS al hacer scroll */
+.header.is-scrolled {
+  box-shadow: var(--shadow-sm);
+}
+
+.header__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  height: var(--header-height);
+}
+
+/* Logo */
+.header__logo {
+  font-family: var(--font-serif);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.3em;
+}
+
+/* Iconos de acción */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.header__action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--color-black);
+  transition: opacity var(--transition);
+}
+
+.header__action:hover {
+  opacity: 0.6;
+}
+
+/* Contador (carrito / favoritos) */
+.header__badge {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  line-height: 18px;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   2. BOTÓN HAMBURGUESA
+   -------------------------------------------------------------------------- */
+.header__toggle {
+  display: none;               /* Visible solo en móvil (ver media query) */
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  position: relative;
+  z-index: calc(var(--z-nav-mobile) + 1);
+}
+
+.header__toggle-bar {
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  background: var(--color-black);
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+/* Animación a "X" cuando el menú está abierto */
+.header__toggle[aria-expanded="true"] .header__toggle-bar:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.header__toggle[aria-expanded="true"] .header__toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.header__toggle[aria-expanded="true"] .header__toggle-bar:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* --------------------------------------------------------------------------
+   3. NAVEGACIÓN (escritorio)
+   -------------------------------------------------------------------------- */
+.nav__list {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.nav__link {
+  position: relative;
+  padding-block: var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+/* Subrayado animado */
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--transition);
+}
+
+.nav__link:hover::after,
+.nav__link--active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav__link--highlight {
+  color: var(--color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   4. OVERLAY (fondo detrás del menú móvil)
+   -------------------------------------------------------------------------- */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: rgba(0, 0, 0, 0.4);
+  animation: fade-in var(--transition);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   5. RESPONSIVE — Escritorio: logo | nav | iconos
+   -------------------------------------------------------------------------- */
+@media (min-width: 961px) {
+  .header__logo {
+    order: 1;
+  }
+
+  .nav {
+    order: 2;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .header__actions {
+    order: 3;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. RESPONSIVE — Móvil / tablet: hamburguesa | logo | iconos
+   -------------------------------------------------------------------------- */
+@media (max-width: 960px) {
+  .header__toggle {
+    display: flex;
+  }
+
+  /* Logo centrado */
+  .header__logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Panel lateral deslizante */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-nav-mobile);
+    width: min(320px, 85vw);
+    height: 100vh;
+    height: 100dvh;
+    padding: calc(var(--header-height) + var(--space-6)) var(--space-8) var(--space-8);
+    background: var(--color-white);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.35s ease, visibility 0.35s;
+  }
+
+  .nav.is-open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .nav__list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .nav__link {
+    display: block;
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--fs-sm);
+  }
+
+  .nav__link::after {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .header__action--hide-mobile {
+    display: none;
+  }
+}
