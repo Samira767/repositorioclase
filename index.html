@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="css/footer.css">
   <link rel="stylesheet" href="css/productos.css">
   <link rel="stylesheet" href="css/carrito.css">
+  <link rel="stylesheet" href="css/paneles.css">
 </head>
 <body>
 
@@ -49,25 +50,28 @@
           <li class="nav__item"><a class="nav__link" href="#novedades">Novedades</a></li>
           <li class="nav__item"><a class="nav__link nav__link--highlight" href="#ofertas">Ofertas</a></li>
           <li class="nav__item"><a class="nav__link" href="#contacto">Contacto</a></li>
+          <!-- Solo en móvil (en escritorio están como iconos) -->
+          <li class="nav__item nav__item--mobile"><button class="nav__link" type="button" data-open-panel="account-drawer">Mi cuenta</button></li>
+          <li class="nav__item nav__item--mobile"><button class="nav__link" type="button" data-open-panel="favorites-drawer">Favoritos</button></li>
         </ul>
       </nav>
 
       <!-- Iconos de acción -->
       <div class="header__actions">
-        <button class="header__action" type="button" aria-label="Buscar" data-action="search">
+        <!-- data-open-panel="id" abre el panel con ese id (ver js/main.js) -->
+        <button class="header__action" type="button" aria-label="Buscar" data-action="search" data-open-panel="search-panel">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         </button>
-        <a class="header__action header__action--hide-mobile" href="#cuenta" aria-label="Mi cuenta" data-action="user">
+        <button class="header__action header__action--hide-mobile" type="button" aria-label="Mi cuenta" data-action="user" data-open-panel="account-drawer">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        </a>
-        <a class="header__action header__action--hide-mobile" href="#favoritos" aria-label="Favoritos" data-action="favorites">
+        </button>
+        <button class="header__action header__action--hide-mobile" type="button" aria-label="Favoritos" data-action="favorites" data-open-panel="favorites-drawer">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.2-9.4C1.6 7.6 4 4 7.5 4c2 0 3.5 1.1 4.5 2.6C13 5.1 14.5 4 16.5 4 20 4 22.4 7.6 21.2 11.1 19.5 15.9 12 20.5 12 20.5Z"/></svg>
           <span class="header__badge" data-favorites-count hidden>0</span>
-        </a>
-        <!-- El equipo del carrito puede usar [data-action="cart"] y [data-cart-count] -->
-        <button class="header__action" type="button" aria-label="Carrito de compras" data-action="cart">
+        </button>
+        <button class="header__action" type="button" aria-label="Carrito de compras" data-action="cart" data-open-panel="cart-drawer">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1.2 12.1a1 1 0 0 1-1 .9H7.2a1 1 0 0 1-1-.9L5 7Z"/><path d="M9 7V6a3 3 0 0 1 6 0v1"/></svg>
-          <span class="header__badge" data-cart-count>0</span>
+          <span class="header__badge" data-cart-count hidden>0</span>
         </button>
       </div>
     </div>
@@ -109,7 +113,7 @@
         
 <!-- ENCABEZADO DEL CATALOGO -->
 <div class="catalog__header" id="novedades">
-  <p class="catalog__eyebrow">AERIS · NUEVA TEMPORADA</p>
+  <p class="catalog__eyebrow">SOVERFER · NUEVA TEMPORADA</p>
   <h2 class="catalog__title">Nuestras novedades</h2>
   <p class="catalog__description">
     Prendas esenciales para expresar tu estilo.
@@ -218,10 +222,114 @@
 
   </main>
 
-  <!-- ======================================================
-       ZONA DE INTEGRACIÓN: CARRITO (panel lateral)
-       (Compañero/a 3) — se recomienda <aside class="cart" id="cart">
-       ====================================================== -->
+  <!-- ========================================================
+       PANELES (se abren con data-open-panel, ver js/main.js)
+       ======================================================== -->
+  <div class="panel-overlay" id="panel-overlay" hidden></div>
+
+  <!-- Búsqueda -->
+  <div class="search-panel" id="search-panel" role="dialog" aria-modal="true" aria-label="Buscar productos" aria-hidden="true">
+    <div class="container">
+      <form class="search-panel__form" id="search-form" role="search">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <label class="visually-hidden" for="search-input">Buscar productos</label>
+        <input class="search-panel__input" id="search-input" type="search"
+               placeholder="Buscar vestidos, camisas, jeans…" autocomplete="off" data-autofocus>
+        <button class="drawer__close" type="button" data-close-panel aria-label="Cerrar búsqueda">&times;</button>
+      </form>
+      <div class="search-panel__results" id="search-results" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <!-- Carrito -->
+  <aside class="drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" aria-hidden="true">
+    <div class="drawer__header">
+      <h2 class="drawer__title" id="cart-title">Tu carrito</h2>
+      <button class="drawer__close" type="button" data-close-panel aria-label="Cerrar carrito">&times;</button>
+    </div>
+    <div class="drawer__body" id="cart-items"></div>
+    <div class="drawer__footer" id="cart-footer" hidden>
+      <div class="drawer__total">
+        <span>Subtotal</span>
+        <strong id="cart-total">S/ 0.00</strong>
+      </div>
+      <p class="drawer__note">Envío gratis en compras mayores a S/ 199.</p>
+      <button class="btn btn--dark btn--block" type="button" id="cart-checkout">Finalizar compra</button>
+    </div>
+  </aside>
+
+  <!-- Favoritos -->
+  <aside class="drawer" id="favorites-drawer" role="dialog" aria-modal="true" aria-labelledby="favorites-title" aria-hidden="true">
+    <div class="drawer__header">
+      <h2 class="drawer__title" id="favorites-title">Favoritos</h2>
+      <button class="drawer__close" type="button" data-close-panel aria-label="Cerrar favoritos">&times;</button>
+    </div>
+    <div class="drawer__body" id="favorites-items"></div>
+  </aside>
+
+  <!-- Cuenta: iniciar sesión / crear cuenta -->
+  <aside class="drawer" id="account-drawer" role="dialog" aria-modal="true" aria-labelledby="account-title" aria-hidden="true">
+    <div class="drawer__header">
+      <h2 class="drawer__title" id="account-title">Mi cuenta</h2>
+      <button class="drawer__close" type="button" data-close-panel aria-label="Cerrar cuenta">&times;</button>
+    </div>
+
+    <div class="drawer__body">
+      <!-- Vista de invitado -->
+      <div id="account-guest">
+        <div class="account__tabs" role="tablist">
+          <button class="account__tab is-active" type="button" role="tab" aria-selected="true" data-account-tab="login">Iniciar sesión</button>
+          <button class="account__tab" type="button" role="tab" aria-selected="false" data-account-tab="registro">Crear cuenta</button>
+        </div>
+
+        <form class="form" id="login-form" novalidate>
+          <div class="form__field">
+            <label class="form__label" for="login-email">Correo electrónico</label>
+            <input class="form__input" id="login-email" name="email" type="email" autocomplete="email" required data-autofocus>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="login-password">Contraseña</label>
+            <input class="form__input" id="login-password" name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <p class="form__error" role="alert" hidden></p>
+          <button class="btn btn--dark btn--block" type="submit">Ingresar</button>
+          <p class="form__hint">¿No tienes cuenta? Usa la pestaña “Crear cuenta”.</p>
+        </form>
+
+        <form class="form" id="register-form" hidden>
+          <div class="form__field">
+            <label class="form__label" for="register-name">Nombre</label>
+            <input class="form__input" id="register-name" name="nombre" type="text" autocomplete="given-name" required>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="register-email">Correo electrónico</label>
+            <input class="form__input" id="register-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="register-password">Contraseña</label>
+            <input class="form__input" id="register-password" name="password" type="password" autocomplete="new-password" minlength="6" required>
+          </div>
+          <p class="form__error" role="alert" hidden></p>
+          <button class="btn btn--dark btn--block" type="submit">Crear cuenta</button>
+        </form>
+      </div>
+
+      <!-- Vista con sesión iniciada -->
+      <div class="account__profile" id="account-user" hidden>
+        <div class="account__avatar" id="account-avatar" aria-hidden="true"></div>
+        <p class="account__greeting">Hola, <strong id="account-name"></strong></p>
+        <p class="account__email" id="account-email"></p>
+        <div class="account__menu">
+          <button class="btn btn--outline btn--block" type="button" data-open-panel="cart-drawer">Ver mi carrito</button>
+          <button class="btn btn--outline btn--block" type="button" data-open-panel="favorites-drawer">Mis favoritos</button>
+          <button class="btn btn--dark btn--block" type="button" id="logout-btn">Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Aviso flotante (mostrarAviso en js/main.js) -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <!-- ========================================================
        FOOTER
@@ -318,11 +426,12 @@
         <div class="modal__tallas">
           <span class="modal__tallas-etiqueta">Talla:</span>
           <div class="modal__tallas-opciones">
-            <button type="button" class="modal__talla-btn">S</button>
-            <button type="button" class="modal__talla-btn">M</button>
-            <button type="button" class="modal__talla-btn">L</button>
+            <button type="button" class="modal__talla-btn" aria-pressed="false">S</button>
+            <button type="button" class="modal__talla-btn" aria-pressed="false">M</button>
+            <button type="button" class="modal__talla-btn" aria-pressed="false">L</button>
           </div>
         </div>
+        <p class="modal__error" id="modal-error" role="alert" hidden>Selecciona una talla para continuar.</p>
         
         <!-- Botón conectar con tu lógica del carrito -->
         <button type="button" id="modal-btn-agregar" class="modal__btn-comprar">Agregar al carrito</button>
@@ -333,5 +442,6 @@
   <script src="js/main.js"></script>
   <script src="js/productos.js" defer></script>
   <script src="js/cart.js" defer></script>
+  <script src="js/cuenta.js" defer></script>
 </body>
 </html>
