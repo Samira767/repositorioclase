@@ -136,6 +136,24 @@
   font-size: 23px;
 }
 
+.product-card__add {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid #222;
+  border-radius: 6px;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.product-card__add:hover {
+  background: #444;
+}
+
 .product-card__favorite.is-favorite {
   color: #c13f55;
 }
