@@ -1,0 +1,127 @@
+/* ==========================================================================
+   PEDIDOS.CSS — Panel "Mis pedidos" y seguimiento del estado
+   ========================================================================== */
+
+.order {
+  display: grid;
+  gap: var(--space-4);
+  padding-block: var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.order:first-child {
+  padding-top: 0;
+}
+
+.order__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.order__code {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+}
+
+.order__date {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+.order__status {
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Línea de tiempo: Confirmado → En preparación → Enviado → Entregado */
+.order__steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order__step {
+  position: relative;
+  padding-top: var(--space-6);
+  font-size: var(--fs-xs);
+  color: var(--color-gray-400);
+  text-align: center;
+}
+
+/* Punto de cada etapa */
+.order__step::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-gray-200);
+  border-radius: 50%;
+  background: var(--color-white);
+  transform: translateX(-50%);
+}
+
+/* Línea que une los puntos */
+.order__step:not(:first-child)::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--color-gray-200);
+}
+
+.order__step.is-done {
+  color: var(--color-text);
+}
+
+.order__step.is-done::before {
+  border-color: var(--color-black);
+  background: var(--color-black);
+}
+
+.order__step.is-done::after {
+  background: var(--color-black);
+}
+
+.order__step.is-current {
+  font-weight: var(--fw-semibold);
+}
+
+.order__products {
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.order__product {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.order__product small {
+  color: var(--color-text-muted);
+}
+
+.order__total {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+}

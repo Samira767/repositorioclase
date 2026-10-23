@@ -153,10 +153,14 @@ function configurarPanelCarrito() {
             return;
         }
 
+        // Guardar el pedido para "Ver mi pedido" (js/pedidos.js)
+        const subtotal = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
+        const pedido = typeof registrarPedido === 'function' ? registrarPedido(usuario, carrito, subtotal) : null;
+
         carrito = [];
         guardarCarrito();
         cerrarPanel();
-        mostrarAviso(`¡Gracias, ${usuario.nombre}! Tu pedido fue registrado.`);
+        mostrarAviso(`¡Gracias, ${usuario.nombre}! Tu pedido ${pedido ? pedido.codigo + ' ' : ''}fue registrado.`);
     });
 }
 

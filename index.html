@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/productos.css">
   <link rel="stylesheet" href="css/carrito.css">
   <link rel="stylesheet" href="css/paneles.css">
+  <link rel="stylesheet" href="css/pedidos.css">
 </head>
 <body>
 
@@ -320,12 +321,22 @@
         <p class="account__greeting">Hola, <strong id="account-name"></strong></p>
         <p class="account__email" id="account-email"></p>
         <div class="account__menu">
+          <button class="btn btn--outline btn--block" type="button" data-open-panel="orders-drawer">Ver mi pedido</button>
           <button class="btn btn--outline btn--block" type="button" data-open-panel="cart-drawer">Ver mi carrito</button>
           <button class="btn btn--outline btn--block" type="button" data-open-panel="favorites-drawer">Mis favoritos</button>
           <button class="btn btn--dark btn--block" type="button" id="logout-btn">Cerrar sesión</button>
         </div>
       </div>
     </div>
+  </aside>
+
+  <!-- Mis pedidos: estado del pedido (js/pedidos.js) -->
+  <aside class="drawer" id="orders-drawer" role="dialog" aria-modal="true" aria-labelledby="orders-title" aria-hidden="true">
+    <div class="drawer__header">
+      <h2 class="drawer__title" id="orders-title">Mis pedidos</h2>
+      <button class="drawer__close" type="button" data-close-panel aria-label="Cerrar pedidos">&times;</button>
+    </div>
+    <div class="drawer__body" id="orders-items"></div>
   </aside>
 
   <!-- Aviso flotante (mostrarAviso en js/main.js) -->
@@ -443,5 +454,6 @@
   <script src="js/productos.js" defer></script>
   <script src="js/cart.js" defer></script>
   <script src="js/cuenta.js" defer></script>
+  <script src="js/pedidos.js" defer></script>
 </body>
 </html>
