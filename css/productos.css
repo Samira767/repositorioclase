@@ -1,0 +1,253 @@
+
+/* ==========================================
+   AERIS - CATALOGO DE PRODUCTOS
+   Integrante 2
+   ========================================== */
+
+#catalogo {
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+.catalog__header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.catalog__eyebrow {
+  color: #94745b;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.catalog__title {
+  margin: 10px 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(36px, 5vw, 54px);
+  font-weight: 500;
+}
+
+.catalog__description {
+  color: #777;
+  line-height: 1.7;
+}
+
+/* Filtros */
+
+.catalog__filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.catalog__filter {
+  padding: 10px 18px;
+  border: 1px solid #dedbd7;
+  border-radius: 30px;
+  background: #fff;
+  color: #292929;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.catalog__filter:hover,
+.catalog__filter.is-active {
+  border-color: #292929;
+  background: #292929;
+  color: #fff;
+}
+
+.catalog__filter:focus-visible,
+.product-card__favorite:focus-visible {
+  outline: 2px solid #94745b;
+  outline-offset: 3px;
+}
+
+/* Contador */
+
+.catalog__count {
+  margin: 28px 0 16px;
+  color: #777;
+  font-size: 13px;
+}
+
+/* Cuadricula de productos */
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 30px 20px;
+}
+
+.product-card {
+  min-width: 0;
+}
+
+.product-card__image-wrap {
+  position: relative;
+  overflow: hidden;
+  background: #f3f0ed;
+  aspect-ratio: 3 / 4;
+}
+
+.product-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.04);
+}
+
+.product-card__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 10px;
+  background: #fff;
+  color: #292929;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.product-card__favorite {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #292929;
+  cursor: pointer;
+  font-size: 23px;
+}
+
+.product-card__favorite.is-favorite {
+  color: #c13f55;
+}
+
+.product-card__info {
+  padding: 14px 2px;
+}
+
+.product-card__category {
+  margin: 0 0 7px;
+  color: #777;
+  font-size: 12px;
+}
+
+.product-card__name {
+  margin: 0 0 9px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.product-card__price {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.products-empty {
+  grid-column: 1 / -1;
+  padding: 40px 10px;
+  color: #777;
+  text-align: center;
+}
+
+/* Promociones */
+
+.catalog__promotions {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
+  margin-top: 65px;
+}
+
+.catalog__promotion {
+  display: flex;
+  min-height: 230px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 32px;
+  background: #eee7df;
+  color: #29231f;
+}
+
+.catalog__promotion--dark {
+  background: #302d2a;
+  color: #fff;
+}
+
+.catalog__promotion-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.catalog__promotion h3 {
+  margin: 8px 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(25px, 3vw, 36px);
+  font-weight: 500;
+}
+
+.catalog__promotion p:last-child {
+  line-height: 1.7;
+}
+
+/* Adaptacion a dispositivos moviles */
+
+@media (max-width: 900px) {
+  .products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  #catalogo {
+    padding-top: 45px;
+    padding-bottom: 45px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 12px;
+  }
+
+  .catalog__filters {
+    gap: 8px;
+  }
+
+  .catalog__filter {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+
+  .catalog__promotions {
+    grid-template-columns: 1fr;
+    margin-top: 40px;
+  }
+
+  .catalog__promotion {
+    min-height: 190px;
+    padding: 24px;
+  }
+}
