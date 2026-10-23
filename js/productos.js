@@ -127,15 +127,25 @@ function crearTarjeta(producto) {
         >${esFavorito ? "♥" : "♡"}</button>
       </div>
 
-      <div class="product-card__info">
-        <p class="product-card__category">
-          ${producto.genero} · ${producto.categoria}
-        </p>
-        <h3 class="product-card__name">${producto.nombre}</h3>
-        <p class="product-card__price">
-          ${formatearPrecio(producto.precio)}
-        </p>
-      </div>
+      
+<div class="product-card__info">
+  <p class="product-card__category">
+    ${producto.genero} · ${producto.categoria}
+  </p>
+
+  <h3 class="product-card__name">${producto.nombre}</h3>
+
+  <p class="product-card__price">
+    ${formatearPrecio(producto.precio)}
+  </p>
+
+  <button
+    class="product-card__add"
+    type="button"
+    data-add-id="${producto.id}">
+    + Agregar rápido
+  </button>
+</div>
     </article>
   `;
 }
@@ -212,6 +222,19 @@ document.addEventListener("click", (evento) => {
     renderizarProductos();
     return;
   }
+
+const botonAgregar = evento.target.closest("[data-add-id]");
+
+if (botonAgregar) {
+  const id = Number(botonAgregar.dataset.addId);
+  const producto = products.find((p) => p.id === id);
+
+  if (producto) {
+    alert(`${producto.nombre} agregado rápidamente.`);
+  }
+
+  return;
+}
 
   const botonFavorito = evento.target.closest("[data-favorite-id]");
 
