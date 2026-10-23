@@ -22,6 +22,8 @@
     background-color: #ffffff;
     width: 90%;
     max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
     padding: 30px;
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -75,6 +77,17 @@
     transition: all 0.2s;
 }
 .modal__talla-btn:hover { border-color: #000; background-color: #f9f9f9; }
+.modal__talla-btn.is-active { border-color: #000; background-color: #000; color: #fff; }
+
+/* Mensaje si no se eligió talla */
+.modal__error { margin: -12px 0 16px; font-size: 13px; color: #b4232a; }
+
+/* Imagen con proporción de prenda y altura limitada en móvil */
+.modal__imagen-zona img { aspect-ratio: 3 / 4; max-height: 60vh; }
+
+@media (max-width: 600px) {
+    .modal__contenido { padding: 50px 20px 20px; }
+}
 
 /* Botón Comprar */
 .modal__btn-comprar {

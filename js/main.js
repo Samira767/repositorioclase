@@ -3,12 +3,15 @@
    - Menú móvil (hamburguesa)
    - Sombra del header al hacer scroll
    - Año dinámico en el footer
+   - Paneles laterales (carrito, favoritos, cuenta, búsqueda)
+   - Avisos flotantes (toast)
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
   initMobileMenu();
   initHeaderScroll();
   setCurrentYear();
+  initPanels();
 });
 
 /* --------------------------------------------------------------------------
@@ -84,4 +87,87 @@ function initHeaderScroll() {
 function setCurrentYear() {
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
+}
+
+/* --------------------------------------------------------------------------
+   PANELES LATERALES
+   Cualquier botón con data-open-panel="id-del-panel" abre ese panel.
+   Cualquier elemento con data-close-panel cierra el panel abierto.
+   Desde otros scripts: abrirPanel("cart-drawer") / cerrarPanel()
+   -------------------------------------------------------------------------- */
+let panelAbierto = null;
+let focoAnterior = null;
+
+function abrirPanel(id) {
+  const panel = document.getElementById(id);
+  const overlay = document.getElementById("panel-overlay");
+  if (!panel) return;
+
+  if (panelAbierto) cerrarPanel({ devolverFoco: false });
+  else focoAnterior = document.activeElement;
+
+  panel.classList.add("is-open");
+  panel.setAttribute("aria-hidden", "false");
+  if (overlay) overlay.hidden = false;
+  document.body.classList.add("is-locked");
+  panelAbierto = panel;
+
+  // Avisa al panel que se abrió (para refrescar su contenido)
+  panel.dispatchEvent(new CustomEvent("panel:open"));
+
+  const foco = panel.querySelector("[data-autofocus]") || panel.querySelector("[data-close-panel]");
+  setTimeout(() => foco?.focus(), 50);
+}
+
+function cerrarPanel({ devolverFoco = true } = {}) {
+  const overlay = document.getElementById("panel-overlay");
+  if (!panelAbierto) return;
+
+  panelAbierto.classList.remove("is-open");
+  panelAbierto.setAttribute("aria-hidden", "true");
+  if (overlay) overlay.hidden = true;
+  document.body.classList.remove("is-locked");
+  panelAbierto = null;
+
+  if (devolverFoco) focoAnterior?.focus();
+}
+
+function initPanels() {
+  const overlay = document.getElementById("panel-overlay");
+
+  document.addEventListener("click", (event) => {
+    const botonAbrir = event.target.closest("[data-open-panel]");
+    if (botonAbrir) {
+      event.preventDefault();
+      abrirPanel(botonAbrir.dataset.openPanel);
+      return;
+    }
+
+    if (event.target.closest("[data-close-panel]")) cerrarPanel();
+  });
+
+  overlay?.addEventListener("click", () => cerrarPanel());
+
+  // Escape cierra el panel (si hay un modal encima, se cierra primero el modal)
+  document.addEventListener("keydown", (event) => {
+    const hayModal = document.querySelector(".modal:not([hidden])");
+    if (event.key === "Escape" && panelAbierto && !hayModal) cerrarPanel();
+  });
+}
+
+/* --------------------------------------------------------------------------
+   AVISO FLOTANTE (toast)
+   Uso desde cualquier script: mostrarAviso("Producto agregado")
+   -------------------------------------------------------------------------- */
+let temporizadorAviso;
+
+function mostrarAviso(mensaje) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.textContent = mensaje;
+  toast.classList.add("is-visible");
+
+  clearTimeout(temporizadorAviso);
+  temporizadorAviso = setTimeout(() => toast.classList.remove("is-visible"), 2800);
 }

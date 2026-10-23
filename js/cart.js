@@ -1,111 +1,205 @@
 // =========================================================================
-// LÓGICA DEL CARRITO DE COMPRAS - AERIS (INTEGRANTE 3)
+// LÓGICA DEL CARRITO DE COMPRAS - SOVERFER (INTEGRANTE 3)
 // =========================================================================
 
 // 1. Cargar el carrito desde localStorage (si ya tiene datos guardados) o iniciar vacío []
-let carrito = JSON.parse(localStorage.getItem('carrito_aeris')) || [];
+const CLAVE_CARRITO = 'carrito_aeris';
+let carrito = (JSON.parse(localStorage.getItem(CLAVE_CARRITO)) || [])
+    // Compatibilidad con productos guardados antes de tener tallas
+    .map(item => ({ ...item, clave: item.clave || String(item.id) }));
 
-// 2. Al cargar la página por completo, se actualiza la burbuja del header y se preparan los botones
+// Talla elegida en la vista rápida
+let tallaSeleccionada = null;
+
+// 2. Al cargar la página: actualizar la burbuja del header y dibujar el carrito
 document.addEventListener('DOMContentLoaded', () => {
     actualizarBurbujaHeader();
-    configurarBotonesComprar();
+    renderizarCarrito();
+    configurarPanelCarrito();
 });
 
-// 3. FUNCIÓN: Detectar los clics en los botones de "Agregar al carrito"
-function configurarBotonesComprar() {
-    // Escucha todos los botones que tengan la clase 'btn-agregar' (coordinar con tu compañero de catálogo)
-    const botones = document.querySelectorAll('.btn-agregar');
-    
-    botones.forEach(boton => {
-        boton.addEventListener('click', (e) => {
-            // Prevenir comportamientos por defecto del botón si los hubiera
-            e.preventDefault();
-            
-            // Capturar los datos del producto que están guardados en los atributos del HTML (data-*)
-            const id = e.target.dataset.id;
-            const nombre = e.target.dataset.nombre;
-            const precio = parseFloat(e.target.dataset.price);
-            
-            // Ejecutar la función para añadir el producto al arreglo
-            agregarProducto(id, nombre, precio);
-        });
-    });
+// Formato de moneda en soles
+function formatearSoles(precio) {
+    return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(precio);
 }
 
-// 4. FUNCIÓN: Lógica para añadir o incrementar las unidades de un producto
-function agregarProducto(id, nombre, precio) {
-    // Buscar si el producto que se quiere agregar ya existe previamente en el carrito
-    const productoExistente = carrito.find(item => item.id === id);
+// Guardar en el navegador y refrescar todo lo que depende del carrito
+function guardarCarrito() {
+    localStorage.setItem(CLAVE_CARRITO, JSON.stringify(carrito));
+    actualizarBurbujaHeader();
+    renderizarCarrito();
+}
+
+// 3. FUNCIÓN: Añadir un producto (o sumar 1 si ya existe con la misma talla)
+// El catálogo la llama con: agregarProducto(id, nombre, precio, imagen, talla)
+function agregarProducto(id, nombre, precio, imagen = '', talla = 'M') {
+    const clave = `${id}-${talla}`;
+    const productoExistente = carrito.find(item => item.clave === clave);
 
     if (productoExistente) {
-        // Si ya existe, simplemente le sumamos 1 a su cantidad
         productoExistente.cantidad += 1;
     } else {
-        // Si es nuevo, lo empujamos al arreglo con sus propiedades iniciales
-        carrito.push({
-            id: id,
-            nombre: nombre,
-            precio: precio,
-            cantidad: 1
-        });
+        carrito.push({ clave, id, nombre, precio, imagen, talla, cantidad: 1 });
     }
 
-    // Guardar el estado actualizado del carrito de forma persistente en el navegador
-    localStorage.setItem('carrito_aeris', JSON.stringify(carrito));
-    
-    // Actualizar la viñeta numérica inmediatamente en la pantalla
-    actualizarBurbujaHeader();
+    guardarCarrito();
+
+    if (typeof mostrarAviso === 'function') {
+        mostrarAviso(`${nombre} (talla ${talla}) se agregó al carrito`);
+    }
 }
 
-// 5. FUNCIÓN: Calcular el total de prendas y actualizar el [data-cart-count] de tu compañera
+// Cambiar la cantidad de un producto (+1 / -1). Si llega a 0, se elimina.
+function cambiarCantidad(clave, cambio) {
+    const item = carrito.find(producto => producto.clave === clave);
+    if (!item) return;
+
+    item.cantidad += cambio;
+    if (item.cantidad <= 0) {
+        eliminarProducto(clave);
+        return;
+    }
+    guardarCarrito();
+}
+
+function eliminarProducto(clave) {
+    carrito = carrito.filter(item => item.clave !== clave);
+    guardarCarrito();
+}
+
+// 4. FUNCIÓN: Calcular el total de prendas y actualizar el [data-cart-count] del header
 function actualizarBurbujaHeader() {
-    // Selecciona de forma automática el span exacto que colocó tu compañera mediante su atributo personalizado
     const burbuja = document.querySelector('[data-cart-count]');
-    
+
     if (burbuja) {
-        // Reducir el arreglo para sumar todas las cantidades (.cantidad) de los productos agregados
         const totalProductos = carrito.reduce((acumulador, item) => acumulador + item.cantidad, 0);
-        
-        // Escribir el número total calculado en el elemento HTML
         burbuja.innerText = totalProductos;
-        
-        // Si el carrito está vacío (0), le ponemos el atributo hidden para que se oculte de forma elegante
+
+        // Si el carrito está vacío se oculta la burbuja
         if (totalProductos === 0) {
             burbuja.setAttribute('hidden', '');
         } else {
-            // Si tiene al menos un producto, le removemos el atributo hidden para que sea visible
             burbuja.removeAttribute('hidden');
         }
     }
 }
+
+// =========================================================================
+// PANEL DEL CARRITO (aside#cart-drawer)
+// =========================================================================
+
+function renderizarCarrito() {
+    const lista = document.getElementById('cart-items');
+    const total = document.getElementById('cart-total');
+    const footer = document.getElementById('cart-footer');
+    if (!lista) return;
+
+    if (carrito.length === 0) {
+        lista.innerHTML = `
+            <div class="drawer__empty">
+                <p>Tu carrito está vacío.</p>
+                <a class="btn btn--outline" href="#catalogo" data-close-panel>Ver colección</a>
+            </div>`;
+        if (footer) footer.hidden = true;
+        return;
+    }
+
+    lista.innerHTML = carrito.map(item => `
+        <article class="cart-item">
+            <img class="cart-item__image" src="${item.imagen}" alt="${item.nombre}">
+            <div class="cart-item__info">
+                <h3 class="cart-item__name">${item.nombre}</h3>
+                <p class="cart-item__meta">Talla: ${item.talla || 'Única'}</p>
+                <div class="cart-item__qty">
+                    <button class="cart-item__qty-btn" type="button" data-cart-action="restar" data-clave="${item.clave}" aria-label="Quitar una unidad">−</button>
+                    <span class="cart-item__qty-value">${item.cantidad}</span>
+                    <button class="cart-item__qty-btn" type="button" data-cart-action="sumar" data-clave="${item.clave}" aria-label="Agregar una unidad">+</button>
+                </div>
+            </div>
+            <div class="cart-item__side">
+                <p class="cart-item__price">${formatearSoles(item.precio * item.cantidad)}</p>
+                <button class="cart-item__remove" type="button" data-cart-action="eliminar" data-clave="${item.clave}">Eliminar</button>
+            </div>
+        </article>
+    `).join('');
+
+    const subtotal = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
+    if (total) total.innerText = formatearSoles(subtotal);
+    if (footer) footer.hidden = false;
+}
+
+function configurarPanelCarrito() {
+    const lista = document.getElementById('cart-items');
+    const btnFinalizar = document.getElementById('cart-checkout');
+
+    // Botones + / − / Eliminar de cada producto
+    lista?.addEventListener('click', (e) => {
+        const boton = e.target.closest('[data-cart-action]');
+        if (!boton) return;
+
+        const { cartAction, clave } = boton.dataset;
+        if (cartAction === 'sumar') cambiarCantidad(clave, 1);
+        if (cartAction === 'restar') cambiarCantidad(clave, -1);
+        if (cartAction === 'eliminar') eliminarProducto(clave);
+    });
+
+    // Finalizar compra (simulado): pide iniciar sesión si no hay usuario
+    btnFinalizar?.addEventListener('click', () => {
+        const usuario = typeof obtenerUsuarioActual === 'function' ? obtenerUsuarioActual() : null;
+
+        if (!usuario) {
+            abrirPanel('account-drawer');
+            mostrarAviso('Inicia sesión para finalizar tu compra');
+            return;
+        }
+
+        carrito = [];
+        guardarCarrito();
+        cerrarPanel();
+        mostrarAviso(`¡Gracias, ${usuario.nombre}! Tu pedido fue registrado.`);
+    });
+}
+
 // =========================================================================
 // INTERACCIONES DEL MODAL VISTA RÁPIDA
 // =========================================================================
 
-// Función para abrir el modal cargando la información del producto seleccionado
+// Abrir el modal con la información del producto seleccionado
+// productoData = { id, nombre, precio, imagen, descripcion? }
 function abrirVistaRapida(productoData) {
     const modal = document.getElementById('vista-rapida-modal');
-    
-    if (modal) {
-        // Inyectar los datos dinámicamente en los elementos del modal
-        document.getElementById('modal-img').src = productoData.imagen;
-        document.getElementById('modal-titulo').innerText = productoData.nombre;
-        document.getElementById('modal-precio').innerText = `S/. ${productoData.precio.toFixed(2)}`;
-        document.getElementById('modal-descripcion').innerText = productoData.descripcion || "Prenda de la colección de temporada AERIS. Diseño minimalista confeccionado con materiales de alta calidad.";
-        
-        // Configurar el botón de comprar interno del modal para que funcione con tu carrito
-        const btnAgregarInterno = document.getElementById('modal-btn-agregar');
-        btnAgregarInterno.onclick = () => {
-            agregarProducto(productoData.id, productoData.nombre, productoData.precio);
-            cerrarVistaRapida();
-        };
+    if (!modal) return;
 
-        // Mostrar el modal quitando el atributo hidden
-        modal.removeAttribute('hidden');
-    }
+    const imagen = document.getElementById('modal-img');
+    imagen.src = productoData.imagen;
+    imagen.alt = productoData.nombre;
+    document.getElementById('modal-titulo').innerText = productoData.nombre;
+    document.getElementById('modal-precio').innerText = formatearSoles(productoData.precio);
+    document.getElementById('modal-descripcion').innerText = productoData.descripcion || "Prenda de la colección de temporada SOVERFER. Diseño minimalista confeccionado con materiales de alta calidad.";
+
+    // Reiniciar la talla elegida
+    tallaSeleccionada = null;
+    document.querySelectorAll('.modal__talla-btn').forEach(btn => {
+        btn.classList.remove('is-active');
+        btn.setAttribute('aria-pressed', 'false');
+    });
+    document.getElementById('modal-error').hidden = true;
+
+    // Botón "Agregar al carrito" del modal: exige elegir talla
+    const btnAgregarInterno = document.getElementById('modal-btn-agregar');
+    btnAgregarInterno.onclick = () => {
+        if (!tallaSeleccionada) {
+            document.getElementById('modal-error').hidden = false;
+            return;
+        }
+        agregarProducto(productoData.id, productoData.nombre, productoData.precio, productoData.imagen, tallaSeleccionada);
+        cerrarVistaRapida();
+    };
+
+    modal.removeAttribute('hidden');
+    document.getElementById('btn-cerrar-modal')?.focus();
 }
 
-// Función para cerrar el modal
 function cerrarVistaRapida() {
     const modal = document.getElementById('vista-rapida-modal');
     if (modal) {
@@ -113,7 +207,7 @@ function cerrarVistaRapida() {
     }
 }
 
-// Configurar el evento de cierre al hacer clic en la (X) o fuera del contenedor
+// Cierre con la (X), clic fuera del contenedor o tecla Escape + selección de talla
 document.addEventListener('DOMContentLoaded', () => {
     const btnCerrar = document.getElementById('btn-cerrar-modal');
     const modal = document.getElementById('vista-rapida-modal');
@@ -122,10 +216,26 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCerrar.addEventListener('click', cerrarVistaRapida);
     }
 
-    // Cerrar si hacen clic en el fondo oscuro
     if (modal) {
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) cerrarVistaRapida();
+            if (e.target === modal) {
+                cerrarVistaRapida();
+                return;
+            }
+
+            const botonTalla = e.target.closest('.modal__talla-btn');
+            if (botonTalla) {
+                document.querySelectorAll('.modal__talla-btn').forEach(btn => {
+                    btn.classList.toggle('is-active', btn === botonTalla);
+                    btn.setAttribute('aria-pressed', String(btn === botonTalla));
+                });
+                tallaSeleccionada = botonTalla.innerText.trim();
+                document.getElementById('modal-error').hidden = true;
+            }
         });
     }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && !modal.hidden) cerrarVistaRapida();
+    });
 });

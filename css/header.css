@@ -244,8 +244,22 @@
   }
 }
 
+/* "Mi cuenta" y "Favoritos" dentro del menú: solo cuando sus iconos se ocultan */
+.nav__item--mobile {
+  display: none;
+}
+
+button.nav__link {
+  width: 100%;
+  text-align: left;
+}
+
 @media (max-width: 480px) {
   .header__action--hide-mobile {
     display: none;
+  }
+
+  .nav__item--mobile {
+    display: block;
   }
 }
